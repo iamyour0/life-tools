@@ -1,0 +1,536 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>Life Tools | No Stress Hub</title>
+<style>
+:root{
+  --bg:#101827;
+  --panel:#182438;
+  --panel2:#202f46;
+  --text:#f4f7fb;
+  --muted:#9eacc0;
+  --accent:#79e0c1;
+  --accent2:#8db8ff;
+  --line:rgba(255,255,255,.09);
+  --radius:20px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:radial-gradient(circle at 15% 0%,#243956 0,transparent 35%),var(--bg);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+  min-height:100vh;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.shell{width:min(1100px,94%);margin:0 auto;padding:34px 0 55px}
+header{text-align:center;margin-bottom:28px}
+.logo{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:8px 14px;border:1px solid var(--line);
+  border-radius:30px;color:var(--accent);font-size:12px;
+  letter-spacing:2px;font-weight:bold
+}
+h1{font-size:clamp(32px,6vw,52px);margin:17px 0 9px;letter-spacing:-1.5px}
+.subtitle{color:var(--muted);font-size:15px;line-height:1.6;margin:0}
+.tabs{
+  display:flex;gap:9px;flex-wrap:wrap;justify-content:center;
+  margin:28px 0 22px
+}
+.tab{
+  border:1px solid var(--line);background:var(--panel);
+  color:var(--muted);padding:12px 17px;border-radius:13px;
+  font-weight:bold;transition:.2s
+}
+.tab:hover{border-color:var(--accent);color:var(--text)}
+.tab.active{background:var(--accent);color:#10251f;border-color:var(--accent)}
+.panel{
+  display:none;background:linear-gradient(145deg,rgba(31,48,72,.98),rgba(22,34,52,.98));
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:clamp(20px,4vw,34px);box-shadow:0 18px 50px rgba(0,0,0,.2)
+}
+.panel.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:.5;transform:translateY(5px)}to{opacity:1;transform:none}}
+.panel-head{margin-bottom:25px}
+.panel-head h2{font-size:25px;margin:0 0 8px}
+.panel-head p{color:var(--muted);margin:0;line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.field{display:flex;flex-direction:column;gap:8px;min-width:0}
+.field label{font-size:13px;color:var(--muted);font-weight:bold}
+input,select{
+  width:100%;min-width:0;background:#101b2b;color:var(--text);
+  border:1px solid var(--line);border-radius:12px;padding:14px;
+  outline:none
+}
+input:focus,select:focus{border-color:var(--accent)}
+select option{background:#101b2b}
+.result{
+  margin-top:20px;padding:19px;border-radius:15px;
+  background:rgba(121,224,193,.09);border:1px solid rgba(121,224,193,.22);
+  color:var(--accent);font-size:clamp(20px,4vw,28px);
+  font-weight:bold;overflow-wrap:anywhere
+}
+.result small{display:block;font-size:12px;color:var(--muted);font-weight:normal;margin-bottom:7px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.primary,.secondary{
+  border:0;border-radius:12px;padding:13px 18px;font-weight:bold
+}
+.primary{background:var(--accent);color:#10251f}
+.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+.primary:hover{filter:brightness(1.08)}
+.secondary:hover{border-color:var(--accent)}
+.note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:13px}
+.clock-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.clock{
+  padding:18px;background:#101b2b;border:1px solid var(--line);
+  border-radius:16px;min-width:0
+}
+.clock .city{font-size:14px;color:var(--muted);font-weight:bold}
+.clock .time{font-size:clamp(22px,3vw,30px);font-weight:bold;margin:9px 0;color:var(--accent)}
+.clock .date{font-size:12px;color:var(--muted)}
+.mode-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.mode-buttons button{padding:10px 13px;border-radius:10px}
+.mode-buttons button.active{background:var(--accent);color:#10251f;border-color:var(--accent)}
+footer{text-align:center;color:#718198;font-size:12px;margin-top:25px}
+@media(max-width:700px){
+  .grid{grid-template-columns:1fr}
+  .clock-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tab{flex:1 1 29%;padding:11px 8px;font-size:12px}
+}
+@media(max-width:420px){
+  .clock-grid{grid-template-columns:1fr 1fr;gap:9px}
+  .clock{padding:13px}
+  .clock .time{font-size:21px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+<header>
+  <div class="logo">✦ NO STRESS HUB</div>
+  <h1>Life Tools</h1>
+  <p class="subtitle">Simple, friendly tools for everyday calculations,<br>time zones and planning.</p>
+</header>
+
+<nav class="tabs" aria-label="Life tools">
+  <button class="tab active" data-tab="units">📏 Unit Converter</button>
+  <button class="tab" data-tab="currency">💱 Currency</button>
+  <button class="tab" data-tab="percent">％ Percentage</button>
+  <button class="tab" data-tab="clock">🌍 World Clock</button>
+  <button class="tab" data-tab="date">📅 Date Calculator</button>
+</nav>
+
+<!-- UNIT CONVERTER -->
+<section class="panel active" id="units">
+  <div class="panel-head">
+    <h2>📏 Unit Converter</h2>
+    <p>Convert everyday measurements quickly and easily.</p>
+  </div>
+  <div class="field" style="margin-bottom:18px">
+    <label for="unitType">Measurement type</label>
+    <select id="unitType">
+      <option value="length">Length</option>
+      <option value="weight">Weight</option>
+      <option value="temperature">Temperature</option>
+      <option value="area">Area</option>
+      <option value="volume">Volume</option>
+    </select>
+  </div>
+  <div class="grid">
+    <div class="field">
+      <label for="unitValue">Value</label>
+      <input id="unitValue" type="number" value="1" step="any">
+    </div>
+    <div class="field">
+      <label for="unitFrom">From</label>
+      <select id="unitFrom"></select>
+    </div>
+    <div class="field">
+      <label for="unitTo">To</label>
+      <select id="unitTo"></select>
+    </div>
+  </div>
+  <div class="result" id="unitResult"><small>Converted result</small>1</div>
+  <div class="actions">
+    <button class="secondary" id="swapUnits">⇄ Swap units</button>
+    <button class="primary" id="convertUnits">Convert</button>
+  </div>
+</section>
+
+<!-- CURRENCY -->
+<section class="panel" id="currency">
+  <div class="panel-head">
+    <h2>💱 Currency Converter</h2>
+    <p>Convert between popular world currencies using online exchange-rate data.</p>
+  </div>
+  <div class="grid">
+    <div class="field">
+      <label for="moneyAmount">Amount</label>
+      <input id="moneyAmount" type="number" value="100" min="0" step="any">
+    </div>
+    <div class="field">
+      <label for="moneyFrom">From</label>
+      <select id="moneyFrom"></select>
+    </div>
+    <div class="field">
+      <label for="moneyTo">To</label>
+      <select id="moneyTo"></select>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="primary" id="convertMoney">Convert currency</button>
+    <button class="secondary" id="swapMoney">⇄ Swap</button>
+  </div>
+  <div class="result" id="moneyResult"><small>Converted amount</small>Ready to convert</div>
+  <p class="note" id="moneyNote">Exchange rates are retrieved online. Rates may differ from those offered by banks or payment providers.</p>
+</section>
+
+<!-- PERCENTAGE -->
+<section class="panel" id="percent">
+  <div class="panel-head">
+    <h2>％ Percentage Calculator</h2>
+    <p>Calculate percentages, discounts and percentage changes.</p>
+  </div>
+  <div class="mode-buttons">
+    <button class="secondary active" data-mode="of">Percentage of a number</button>
+    <button class="secondary" data-mode="what">What percentage?</button>
+    <button class="secondary" data-mode="change">Percentage change</button>
+    <button class="secondary" data-mode="discount">Discount price</button>
+  </div>
+  <div id="percentFields"></div>
+  <div class="result" id="percentResult"><small>Result</small>Enter your numbers</div>
+</section>
+
+<!-- WORLD CLOCK -->
+<section class="panel" id="clock">
+  <div class="panel-head">
+    <h2>🌍 World Clock</h2>
+    <p>Check the current local time in major cities around the world.</p>
+  </div>
+  <div class="clock-grid" id="clockGrid"></div>
+  <p class="note">Times are based on your device's clock and local time-zone settings.</p>
+</section>
+
+<!-- DATE CALCULATOR -->
+<section class="panel" id="date">
+  <div class="panel-head">
+    <h2>📅 Date Calculator</h2>
+    <p>Calculate the number of days between dates or add and subtract days.</p>
+  </div>
+  <div class="mode-buttons">
+    <button class="secondary active" data-date-mode="between">Days between dates</button>
+    <button class="secondary" data-date-mode="add">Add or subtract days</button>
+  </div>
+  <div id="dateFields"></div>
+  <div class="result" id="dateResult"><small>Result</small>Select your dates</div>
+</section>
+
+<footer>NO STRESS HUB · Useful Tools. Relaxing Games.</footer>
+</div>
+
+<script>
+/* NAVIGATION */
+document.querySelectorAll(".tab").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
+  });
+});
+
+/* UNIT CONVERTER */
+const unitData={
+  length:{
+    "Meters (m)":1,"Kilometers (km)":1000,"Centimeters (cm)":.01,
+    "Millimeters (mm)":.001,"Miles (mi)":1609.344,
+    "Yards (yd)":.9144,"Feet (ft)":.3048,"Inches (in)":.0254
+  },
+  weight:{
+    "Kilograms (kg)":1,"Grams (g)":.001,"Milligrams (mg)":.000001,
+    "Metric tons (t)":1000,"Pounds (lb)":.45359237,"Ounces (oz)":.028349523125
+  },
+  area:{
+    "Square meters (m²)":1,"Square kilometers (km²)":1000000,
+    "Square centimeters (cm²)":.0001,"Hectares (ha)":10000,
+    "Acres":4046.8564224,"Square feet (ft²)":.09290304,
+    "Square yards (yd²)":.83612736
+  },
+  volume:{
+    "Liters (L)":1,"Milliliters (mL)":.001,"Cubic meters (m³)":1000,
+    "US gallons (gal)":3.785411784,"US quarts (qt)":.946352946,
+    "US cups":.2365882365,"US fluid ounces (fl oz)":.0295735295625
+  },
+  temperature:{
+    "Celsius (°C)":"C","Fahrenheit (°F)":"F","Kelvin (K)":"K"
+  }
+};
+const unitType=document.getElementById("unitType");
+const unitFrom=document.getElementById("unitFrom");
+const unitTo=document.getElementById("unitTo");
+const unitValue=document.getElementById("unitValue");
+const unitResult=document.getElementById("unitResult");
+
+function populateUnits(){
+  const type=unitType.value;
+  const names=Object.keys(unitData[type]);
+  unitFrom.innerHTML=names.map(n=>`<option>${n}</option>`).join("");
+  unitTo.innerHTML=names.map((n,i)=>`<option ${i===1?"selected":""}>${n}</option>`).join("");
+  calculateUnits();
+}
+function temperatureToC(v,u){
+  if(u==="C")return v;
+  if(u==="F")return (v-32)*5/9;
+  return v-273.15;
+}
+function temperatureFromC(v,u){
+  if(u==="C")return v;
+  if(u==="F")return v*9/5+32;
+  return v+273.15;
+}
+function calculateUnits(){
+  const v=Number(unitValue.value);
+  if(unitValue.value===""||!Number.isFinite(v)){
+    unitResult.innerHTML="<small>Converted result</small>Enter a valid number";return;
+  }
+  const type=unitType.value;
+  let result;
+  if(type==="temperature"){
+    const a=unitData.temperature[unitFrom.value];
+    const b=unitData.temperature[unitTo.value];
+    result=temperatureFromC(temperatureToC(v,a),b);
+  }else{
+    result=v*unitData[type][unitFrom.value]/unitData[type][unitTo.value];
+  }
+  unitResult.innerHTML=`<small>Converted result</small>${formatNumber(result)} ${unitTo.value}`;
+}
+function formatNumber(n){
+  return Number(n.toPrecision(10)).toLocaleString("en-US",{maximumFractionDigits:8});
+}
+unitType.addEventListener("change",populateUnits);
+[unitFrom,unitTo,unitValue].forEach(el=>el.addEventListener("input",calculateUnits));
+document.getElementById("convertUnits").addEventListener("click",calculateUnits);
+document.getElementById("swapUnits").addEventListener("click",()=>{
+  const a=unitFrom.value,b=unitTo.value;
+  unitFrom.value=b;unitTo.value=a;calculateUnits();
+});
+populateUnits();
+
+/* CURRENCY CONVERTER */
+const currencies={
+ USD:"US Dollar",EUR:"Euro",GBP:"British Pound",JPY:"Japanese Yen",
+ KRW:"South Korean Won",CNY:"Chinese Yuan",CAD:"Canadian Dollar",
+ AUD:"Australian Dollar",CHF:"Swiss Franc",HKD:"Hong Kong Dollar",
+ SGD:"Singapore Dollar",THB:"Thai Baht",INR:"Indian Rupee",
+ NZD:"New Zealand Dollar",PHP:"Philippine Peso",VND:"Vietnamese Dong",
+ IDR:"Indonesian Rupiah",MYR:"Malaysian Ringgit",TWD:"New Taiwan Dollar",
+ SEK:"Swedish Krona",NOK:"Norwegian Krone",DKK:"Danish Krone",
+ MXN:"Mexican Peso",BRL:"Brazilian Real",ZAR:"South African Rand",
+ TRY:"Turkish Lira",PLN:"Polish Zloty"
+};
+const moneyFrom=document.getElementById("moneyFrom");
+const moneyTo=document.getElementById("moneyTo");
+Object.entries(currencies).forEach(([code,name])=>{
+  const label=`${code} — ${name}`;
+  moneyFrom.add(new Option(label,code));
+  moneyTo.add(new Option(label,code));
+});
+moneyFrom.value="USD";moneyTo.value="KRW";
+
+document.getElementById("swapMoney").addEventListener("click",()=>{
+  const a=moneyFrom.value,b=moneyTo.value;
+  moneyFrom.value=b;moneyTo.value=a;
+});
+document.getElementById("convertMoney").addEventListener("click",convertCurrency);
+
+async function convertCurrency(){
+  const amount=Number(document.getElementById("moneyAmount").value);
+  const result=document.getElementById("moneyResult");
+  const note=document.getElementById("moneyNote");
+  if(document.getElementById("moneyAmount").value===""||!Number.isFinite(amount)||amount<0){
+    result.innerHTML="<small>Converted amount</small>Please enter a valid amount";return;
+  }
+  const from=moneyFrom.value,to=moneyTo.value;
+  if(from===to){
+    result.innerHTML=`<small>Converted amount</small>${formatNumber(amount)} ${to}`;
+    note.textContent="Both currencies are the same.";
+    return;
+  }
+  result.innerHTML="<small>Converted amount</small>Loading exchange rate…";
+  note.textContent="Connecting to exchange-rate service…";
+  try{
+    const url=`https://api.frankfurter.dev/v1/latest?base=${encodeURIComponent(from)}&symbols=${encodeURIComponent(to)}`;
+    const response=await fetch(url);
+    if(!response.ok)throw new Error("Exchange-rate service unavailable");
+    const data=await response.json();
+    const rate=data.rates[to];
+    if(!rate)throw new Error("Rate not available for this currency");
+    result.innerHTML=`<small>${formatNumber(amount)} ${from} equals</small>${formatNumber(amount*rate)} ${to}`;
+    note.textContent=`Rate: 1 ${from} = ${formatNumber(rate)} ${to} · Rate date: ${data.date} · Reference rates only.`;
+  }catch(error){
+    result.innerHTML="<small>Converted amount</small>Unable to retrieve rates";
+    note.textContent="Please check your internet connection and try again. Some currencies may not be available.";
+  }
+}
+
+/* PERCENTAGE CALCULATOR */
+const percentFields=document.getElementById("percentFields");
+const percentResult=document.getElementById("percentResult");
+let percentMode="of";
+function percentInputs(){
+  document.querySelectorAll("[data-mode]").forEach(b=>b.classList.toggle("active",b.dataset.mode===percentMode));
+  if(percentMode==="of"){
+    percentFields.innerHTML=`
+      <div class="grid">
+        <div class="field"><label>Percentage (%)</label><input id="pA" type="number" value="20" step="any"></div>
+        <div class="field"><label>Number</label><input id="pB" type="number" value="150" step="any"></div>
+      </div>`;
+  }else if(percentMode==="what"){
+    percentFields.innerHTML=`
+      <div class="grid">
+        <div class="field"><label>Part</label><input id="pA" type="number" value="30" step="any"></div>
+        <div class="field"><label>Whole</label><input id="pB" type="number" value="150" step="any"></div>
+      </div>`;
+  }else if(percentMode==="change"){
+    percentFields.innerHTML=`
+      <div class="grid">
+        <div class="field"><label>Original value</label><input id="pA" type="number" value="100" step="any"></div>
+        <div class="field"><label>New value</label><input id="pB" type="number" value="125" step="any"></div>
+      </div>`;
+  }else{
+    percentFields.innerHTML=`
+      <div class="grid">
+        <div class="field"><label>Original price</label><input id="pA" type="number" value="100" min="0" step="any"></div>
+        <div class="field"><label>Discount (%)</label><input id="pB" type="number" value="20" min="0" max="100" step="any"></div>
+      </div>`;
+  }
+  percentFields.querySelectorAll("input").forEach(x=>x.addEventListener("input",calculatePercent));
+  calculatePercent();
+}
+function calculatePercent(){
+  const a=Number(document.getElementById("pA")?.value);
+  const b=Number(document.getElementById("pB")?.value);
+  if(!Number.isFinite(a)||!Number.isFinite(b)||
+    document.getElementById("pA").value===""||document.getElementById("pB").value===""){
+    percentResult.innerHTML="<small>Result</small>Enter valid numbers";return;
+  }
+  let answer,title;
+  if(percentMode==="of"){answer=a/100*b;title=`${a}% of ${b} is`;}
+  if(percentMode==="what"){
+    if(b===0){percentResult.innerHTML="<small>Result</small>Whole cannot be zero";return;}
+    answer=a/b*100;title=`${a} is this percentage of ${b}`;answer=formatNumber(answer)+"%";
+  }
+  if(percentMode==="change"){
+    if(a===0){percentResult.innerHTML="<small>Result</small>Original value cannot be zero";return;}
+    const change=(b-a)/Math.abs(a)*100;
+    answer=formatNumber(Math.abs(change))+"%";
+    title=change>0?"Percentage increase":change<0?"Percentage decrease":"No change";
+    if(change<0)answer="−"+answer;
+    if(change>0)answer="+"+answer;
+  }
+  if(percentMode==="discount"){
+    if(a<0||b<0||b>100){percentResult.innerHTML="<small>Result</small>Enter a discount from 0 to 100%";return;}
+    answer=a*(1-b/100);
+    title=`Final price after ${b}% discount`;
+    percentResult.innerHTML=`<small>${title} · You save ${formatNumber(a*b/100)}</small>${formatNumber(answer)}`;
+    return;
+  }
+  percentResult.innerHTML=`<small>${title}</small>${typeof answer==="string"?answer:formatNumber(answer)}`;
+}
+document.querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>{
+  percentMode=b.dataset.mode;percentInputs();
+}));
+percentInputs();
+
+/* WORLD CLOCK */
+const cities=[
+  ["Seoul","Asia/Seoul"],["Tokyo","Asia/Tokyo"],["Singapore","Asia/Singapore"],
+  ["Bangkok","Asia/Bangkok"],["Dubai","Asia/Dubai"],["London","Europe/London"],
+  ["Paris","Europe/Paris"],["New York","America/New_York"],
+  ["Los Angeles","America/Los_Angeles"],["Sydney","Australia/Sydney"],
+  ["Toronto","America/Toronto"],["Auckland","Pacific/Auckland"]
+];
+const clockGrid=document.getElementById("clockGrid");
+cities.forEach(([city,zone],i)=>{
+  const card=document.createElement("div");
+  card.className="clock";
+  card.innerHTML=`<div class="city">${city}</div><div class="time" id="clockTime${i}">--:--:--</div><div class="date" id="clockDate${i}"></div>`;
+  clockGrid.appendChild(card);
+});
+function updateClocks(){
+  cities.forEach(([city,zone],i)=>{
+    const now=new Date();
+    document.getElementById(`clockTime${i}`).textContent=
+      new Intl.DateTimeFormat("en-US",{timeZone:zone,hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}).format(now);
+    document.getElementById(`clockDate${i}`).textContent=
+      new Intl.DateTimeFormat("en-US",{timeZone:zone,weekday:"short",year:"numeric",month:"short",day:"numeric"}).format(now);
+  });
+}
+updateClocks();
+setInterval(updateClocks,1000);
+
+/* DATE CALCULATOR */
+const dateFields=document.getElementById("dateFields");
+const dateResult=document.getElementById("dateResult");
+let dateMode="between";
+function localDateString(date){
+  const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,"0"),d=String(date.getDate()).padStart(2,"0");
+  return `${y}-${m}-${d}`;
+}
+function dateInputs(){
+  document.querySelectorAll("[data-date-mode]").forEach(b=>b.classList.toggle("active",b.dataset.dateMode===dateMode));
+  const today=localDateString(new Date());
+  if(dateMode==="between"){
+    dateFields.innerHTML=`
+      <div class="grid">
+        <div class="field"><label>Start date</label><input id="dateA" type="date" value="${today}"></div>
+        <div class="field"><label>End date</label><input id="dateB" type="date" value="${today}"></div>
+      </div>`;
+  }else{
+    dateFields.innerHTML=`
+      <div class="grid">
+        <div class="field"><label>Start date</label><input id="dateA" type="date" value="${today}"></div>
+        <div class="field"><label>Number of days (use a negative number to subtract)</label><input id="dateDays" type="number" value="30" step="1"></div>
+      </div>`;
+  }
+  dateFields.querySelectorAll("input").forEach(x=>x.addEventListener("input",calculateDate));
+  calculateDate();
+}
+function parseDate(value){
+  if(!value)return null;
+  const parts=value.split("-").map(Number);
+  if(parts.length!==3)return null;
+  return new Date(Date.UTC(parts[0],parts[1]-1,parts[2]));
+}
+function calculateDate(){
+  const a=parseDate(document.getElementById("dateA")?.value);
+  if(!a){dateResult.innerHTML="<small>Result</small>Please select a valid date";return;}
+  if(dateMode==="between"){
+    const b=parseDate(document.getElementById("dateB")?.value);
+    if(!b){dateResult.innerHTML="<small>Result</small>Please select an end date";return;}
+    const days=Math.round((b-a)/86400000);
+    const abs=Math.abs(days);
+    dateResult.innerHTML=`<small>Difference between dates</small>${abs.toLocaleString()} day${abs===1?"":"s"}${days<0?" · End date is earlier":""}`;
+  }else{
+    const raw=document.getElementById("dateDays").value;
+    const days=Number(raw);
+    if(raw===""||!Number.isInteger(days)){
+      dateResult.innerHTML="<small>Result</small>Enter a whole number of days";return;
+    }
+    const result=new Date(a.getTime()+days*86400000);
+    const formatted=new Intl.DateTimeFormat("en-US",{year:"numeric",month:"long",day:"numeric",timeZone:"UTC"}).format(result);
+    dateResult.innerHTML=`<small>${days>=0?"Date after":"Date before"} ${Math.abs(days)} day${Math.abs(days)===1?"":"s"}</small>${formatted}`;
+  }
+}
+document.querySelectorAll("[data-date-mode]").forEach(b=>b.addEventListener("click",()=>{
+  dateMode=b.dataset.dateMode;dateInputs();
+}));
+dateInputs();
+</script>
+</body>
+</html>
